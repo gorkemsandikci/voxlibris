@@ -2,6 +2,8 @@
 
 *Vox libris — kitapların sesi.*
 
+**[Tanıtım sayfası ve örnek sesler →](https://gorkemsandikci.github.io/voxlibris/)**
+
 **Kendi EPUB ve PDF kitaplarını, tamamen kendi bilgisayarında ve ücretsiz olarak sesli kitaba çevir.**
 Abonelik, bulut servisi ya da API anahtarı gerekmez. Kitabın metni bilgisayarından hiç çıkmaz.
 

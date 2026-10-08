@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VoxLibris — kitapların sesi</title>
+<meta name="description" content="Kendi EPUB ve PDF kitaplarını tamamen yerel ve ücretsiz olarak Türkçe sesli kitaba çevir. Bulut yok, abonelik yok.">
+<meta name="theme-color" content="#FFFFFF">
+<meta property="og:title" content="VoxLibris — kitapların sesi">
+<meta property="og:description" content="EPUB/PDF kitaplarını yerel ve ücretsiz Türkçe sesli kitaba çevir. 615 sayfa → 17 saat ses, 17 dakikada.">
+<meta property="og:image" content="https://gorkemsandikci.github.io/voxlibris/ekran/telefon.png">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23B08A5F'/%3E%3Cpath d='M18 18h12a6 6 0 0 1 6 6v24a5 5 0 0 0-5-5H18z M46 18H40a6 6 0 0 0-6 6v24a5 5 0 0 1 5-5h7z' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+:root{
+  --zemin:#FFFFFF;--zemin-sicak:#FDFBF7;--krem:#F8F3EB;--bej:#EFE5D6;--bej-orta:#E2D3BC;--bej-koyu:#CDB596;
+  --vurgu:#B08A5F;--vurgu-yazi:#7C5B39;--vurgu-acik:#F3E9DA;
+  --yazi:#2A251F;--yazi-2:#6B6157;--yazi-3:#9A9085;
+  --cam:rgba(255,255,255,.62);--cam-kenar:rgba(255,255,255,.85);--cam-cizgi:rgba(205,181,150,.28);
+  --golge:0 8px 32px rgba(122,94,60,.08),0 1px 2px rgba(122,94,60,.06);
+  --golge-yuzen:0 24px 64px rgba(122,94,60,.16);
+  --serif:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;font:17px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--yazi);
+  background:
+    radial-gradient(70vw 60vh at 90% -10%,#F3E9DA 0%,transparent 60%),
+    radial-gradient(60vw 50vh at -10% 40%,#F8F1E6 0%,transparent 60%),
+    radial-gradient(60vw 50vh at 110% 90%,#F6EEE2 0%,transparent 60%),
+    var(--zemin)}
+a{color:var(--vurgu-yazi)}
+.cam{background:var(--cam);backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);
+  border:1px solid var(--cam-kenar);border-bottom-color:var(--cam-cizgi);box-shadow:var(--golge),inset 0 1px 0 rgba(255,255,255,.9);border-radius:22px}
+@media (prefers-reduced-transparency:reduce){.cam,.ust{background:var(--zemin-sicak);backdrop-filter:none}}
+.kap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* üst çubuk */
+.ust{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.7);backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);border-bottom:1px solid var(--cam-cizgi)}
+.ust .kap{display:flex;align-items:center;gap:20px;height:60px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.01em;color:var(--yazi);text-decoration:none}
+.logo svg{width:28px;height:28px}
+.ust nav{margin-left:auto;display:flex;gap:18px;font-size:15px}
+.ust nav a{color:var(--yazi-2);text-decoration:none}
+.ust nav a:hover{color:var(--vurgu-yazi)}
+@media (max-width:640px){.ust nav a:not(.gh){display:none}}
+
+/* kahraman */
+.kahraman{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;padding-block:72px 40px}
+@media (max-width:860px){.kahraman{grid-template-columns:1fr;padding-top:40px}}
+@media (max-width:640px){section{padding:40px 0}.kahraman{gap:36px}}
+.rozet{display:inline-flex;gap:8px;align-items:center;padding:6px 12px;border-radius:999px;background:var(--vurgu-acik);
+  color:var(--vurgu-yazi);font-size:14px;font-weight:600}
+h1{font:600 clamp(40px,6vw,64px)/1.05 var(--serif);letter-spacing:-.02em;margin:18px 0 6px}
+h1 em{font-style:italic;color:var(--vurgu-yazi)}
+.alt{font-size:clamp(18px,2.2vw,21px);color:var(--yazi-2);max-width:34em;margin:0 0 28px}
+.dugmeler{display:flex;flex-wrap:wrap;gap:12px}
+.dugme{display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:0 24px;border-radius:999px;font-weight:600;
+  text-decoration:none;transition:transform .2s ease-out,box-shadow .2s ease-out}
+.dugme:hover{transform:translateY(-1px)}
+.birincil{background:var(--vurgu);color:#fff;box-shadow:0 10px 24px rgba(176,138,95,.3)}
+.ikincil{background:var(--zemin);color:var(--vurgu-yazi);border:1px solid var(--bej-orta)}
+.dugme svg{width:20px;height:20px}
+
+/* telefon demo */
+.telefon{justify-self:center;width:min(360px,100%);border-radius:44px;padding:12px;background:#fff;
+  box-shadow:var(--golge-yuzen),0 0 0 1px var(--bej-orta)}
+.ekran{border-radius:34px;overflow:hidden;background:
+  radial-gradient(80% 40% at 90% 0%,#F6EEE2 0%,transparent 70%),var(--zemin)}
+.ekran-ust{padding:18px 20px 12px;border-bottom:1px solid var(--cam-cizgi);display:flex;gap:10px;align-items:baseline}
+.ekran-ust b{font-size:17px}.ekran-ust span{color:var(--vurgu-yazi);font-size:14px}
+.kitap{display:flex;gap:14px;align-items:center;margin:14px;padding:14px}
+.kapak{flex:none;width:52px;height:70px;border-radius:8px;background:linear-gradient(160deg,var(--krem),var(--bej-orta));
+  display:grid;place-items:center;font:700 20px var(--serif);color:var(--vurgu-yazi);box-shadow:var(--golge)}
+.kucuk{color:var(--yazi-2);font-size:14px;line-height:1.45}
+.bolumler{margin:0 14px 16px;padding:4px 14px}
+.bolum{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--bej)}
+.bolum:first-child{border-top:0}
+.bolum .ad{flex:1;min-width:0}
+.cal{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--bej-orta);background:var(--zemin-sicak);
+  color:var(--vurgu-yazi);display:grid;place-items:center;cursor:pointer;transition:background .2s}
+.cal svg{width:16px;height:16px}
+.cal[aria-pressed="true"]{background:var(--vurgu);border-color:var(--vurgu);color:#fff}
+.ilerleme{height:3px;border-radius:3px;background:var(--bej);margin-top:6px;overflow:hidden}
+.ilerleme i{display:block;height:100%;width:0;background:var(--vurgu)}
+
+/* bölümler */
+section{padding:56px 0}
+h2{font:600 clamp(28px,4vw,38px)/1.15 var(--serif);letter-spacing:-.01em;margin:0 0 10px}
+.bolum-alt{color:var(--yazi-2);max-width:42em;margin:0 0 28px}
+.sayilar{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media (max-width:860px){.sayilar{grid-template-columns:repeat(2,1fr)}}
+.sayi{padding:22px}
+.sayi b{display:block;font:600 34px/1.1 var(--serif);color:var(--vurgu-yazi)}
+.sayi span{color:var(--yazi-2);font-size:15px}
+.izgara{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:860px){.izgara{grid-template-columns:1fr}}
+.kart{padding:24px}
+.kart h3{margin:10px 0 6px;font-size:18px}
+.kart p{margin:0;color:var(--yazi-2);font-size:15.5px}
+.ikon{width:44px;height:44px;border-radius:14px;background:var(--vurgu-acik);color:var(--vurgu-yazi);display:grid;place-items:center}
+.ikon svg{width:22px;height:22px}
+
+/* sesler */
+.metin-ornek{padding:20px 24px;margin:0 0 16px;font:18px/1.7 var(--serif);color:var(--yazi)}
+.metin-ornek small{display:block;font:14px system-ui,sans-serif;color:var(--yazi-3);margin-top:8px}
+.ses{display:flex;align-items:center;gap:14px;padding:18px}
+.ses .ad{flex:1}.ses b{display:block}
+
+/* akış */
+.akis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;counter-reset:adim}
+@media (max-width:860px){.akis{grid-template-columns:repeat(2,1fr)}}
+.adim{padding:18px;position:relative}
+.adim::before{counter-increment:adim;content:counter(adim);display:grid;place-items:center;width:28px;height:28px;border-radius:50%;
+  background:var(--vurgu);color:#fff;font-weight:700;font-size:14px;margin-bottom:10px}
+.adim b{display:block;font-size:15.5px}.adim span{color:var(--yazi-2);font-size:14px}
+
+/* kod */
+pre{margin:0;padding:22px 24px;overflow-x:auto;background:#24201b;color:#efe6d8;border-radius:18px;
+  font:14.5px/1.7 "Cascadia Mono",Consolas,"SFMono-Regular",monospace;box-shadow:var(--golge)}
+pre .y{color:#a99f92}
+.ekranlar{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+@media (max-width:860px){.ekranlar{grid-template-columns:1fr}}
+.ekranlar img{width:100%;height:auto;border-radius:18px;box-shadow:var(--golge);background:#fff}
+figure{margin:0}figcaption{color:var(--yazi-2);font-size:14px;margin-top:8px}
+footer{padding:40px 0 60px;color:var(--yazi-2);font-size:14.5px;border-top:1px solid var(--bej)}
+footer .kap{display:grid;gap:8px}
+:focus-visible{outline:3px solid var(--vurgu);outline-offset:2px;border-radius:8px}
+</style>
+</head>
+<body>
+
+<header class="ust">
+  <div class="kap">
+    <a class="logo" href="#">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#B08A5F"/><path d="M18 18h12a6 6 0 0 1 6 6v24a5 5 0 0 0-5-5H18z M46 18H40a6 6 0 0 0-6 6v24a5 5 0 0 1 5-5h7z" fill="#fff"/></svg>
+      VoxLibris
+    </a>
+    <nav>
+      <a href="#dinle">Dinle</a>
+      <a href="#sesler">Sesler</a>
+      <a href="#nasil">Nasıl çalışır</a>
+      <a href="#kurulum">Kurulum</a>
+      <a class="gh" href="https://github.com/gorkemsandikci/voxlibris">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="kap kahraman">
+    <div>
+      <span class="rozet">Açık kaynak · MIT · Tamamen yerel</span>
+      <h1>Kitapların <em>sesi.</em></h1>
+      <p class="alt">Kendi EPUB ve PDF kitaplarını, kendi bilgisayarında ve ücretsiz olarak Türkçe sesli kitaba çevir.
+        Bulut yok, abonelik yok, API anahtarı yok. Kitabın metni bilgisayarından hiç çıkmaz.</p>
+      <div class="dugmeler">
+        <a class="dugme birincil" href="#dinle">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>
+          Örneği dinle
+        </a>
+        <a class="dugme ikincil" href="https://github.com/gorkemsandikci/voxlibris">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></svg>
+          GitHub'da gör
+        </a>
+      </div>
+    </div>
+
+    <div class="telefon" id="dinle" aria-label="Uygulamanın telefondaki görünümü — örnek bölümleri dinleyebilirsin">
+      <div class="ekran">
+        <div class="ekran-ust"><span>‹ Kitaplar</span><b>Hikâyeler</b></div>
+        <div class="kitap cam">
+          <div class="kapak">H</div>
+          <div><b>Hikâyeler</b><div class="kucuk">Ömer Seyfettin · 71 bölüm · 17 sa 5 dk</div></div>
+        </div>
+        <div class="bolumler cam" id="oynatici">
+          <div class="bolum" data-ses="ornek/aleko.mp3"><div class="ad"><div>Aleko</div><div class="kucuk">40 dk · ilk 2 dk</div><div class="ilerleme"><i></i></div></div>
+            <button class="cal" type="button" aria-pressed="false" aria-label="Aleko — dinle"></button></div>
+          <div class="bolum" data-ses="ornek/antiseptik.mp3"><div class="ad"><div>Antiseptik</div><div class="kucuk">6 dk · ilk 2 dk</div><div class="ilerleme"><i></i></div></div>
+            <button class="cal" type="button" aria-pressed="false" aria-label="Antiseptik — dinle"></button></div>
+          <div class="bolum" data-ses="ornek/ask-dalgasi.mp3"><div class="ad"><div>Aşk Dalgası</div><div class="kucuk">23 dk · ilk 2 dk</div><div class="ilerleme"><i></i></div></div>
+            <button class="cal" type="button" aria-pressed="false" aria-label="Aşk Dalgası — dinle"></button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="kap">
+      <div class="sayilar">
+        <div class="sayi cam"><b>615 → 17 sa</b><span>sayfalık kitap, saatlik ses</span></div>
+        <div class="sayi cam"><b>17 dk</b><span>tüm kitabın üretimi, masaüstü işlemcide</span></div>
+        <div class="sayi cam"><b>~60×</b><span>gerçek zamandan hızlı (Piper, CPU)</span></div>
+        <div class="sayi cam"><b>0</b><span>buluta giden metin; ekran kartı gerekmez</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="kap">
+      <h2>Neler yapar?</h2>
+      <p class="bolum-alt">Kitabı alır, metni temizler, Türkçe kurallarına göre okur ve bölüm bölüm MP3 olarak telefonuna getirir.</p>
+      <div class="izgara">
+        <div class="kart cam"><div class="ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></div>
+          <h3>EPUB ve PDF</h3><p>İçindekilerden ve yer imlerinden bölümler çıkarır. DRM'li ya da taranmış dosyaları açık bir mesajla reddeder.</p></div>
+        <div class="kart cam"><div class="ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M7 12h10M10 18h4"/></svg></div>
+          <h3>Temiz metin</h3><p>Sayfa üst/alt bilgileri, sayfa numaraları, satır sonu tirelemeleri ve dipnot rakamları ayıklanır. Metni yapay zeka değiştirmez, kurallı kod temizler.</p></div>
+        <div class="kart cam"><div class="ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg></div>
+          <h3>Türkçe okunuş</h3><p>"Dr.", "vb.", "19. yüzyıl", "II. Abdülhamit", "1923'te", "[ed.n.]" doğru okunur. Ekrandaki metin değişmez, sadece sesin kopyası.</p></div>
+        <div class="kart cam"><div class="ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></div>
+          <h3>Kaldığı yerden devam</h3><p>Sayfa sayfa üretir. Yarıda kesersen aynı komut kaldığı sayfadan sürer. Her cümlenin sesteki zamanı kaydedilir.</p></div>
+        <div class="kart cam"><div class="ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></div>
+          <h3>Telefondan erişim</h3><p>Bölümleri dinle, indir ya da tümünü ZIP olarak al. Tailscale ile internete port açmadan, sadece kendi cihazlarından.</p></div>
+        <div class="kart cam"><div class="ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <h3>Gizli ve ücretsiz</h3><p>Her şey senin bilgisayarında olur. Metin de ses de hiçbir servise gönderilmez. Kod MIT lisanslı.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sesler">
+    <div class="kap">
+      <h2>Sesler</h2>
+      <p class="bolum-alt">Aynı paragraf, üç yerel Türkçe sesle. Hepsi işlemcide, saniyeler içinde üretildi.</p>
+      <blockquote class="metin-ornek cam">Bir sonbahar sabahı, Ahmet Bey 1923 yılında kurulan eski konağın kapısını açtı. Dr. Selim, saat 08:30'da
+        gelmişti; elinde %45 indirimli aldığı kitaplar vardı. — Hoş geldiniz, dedi Ahmet Bey. Konağın üçüncü katındaki kütüphanede
+        3.500 cilt kitap duruyordu. Prof. Ayşe Hanım bu kitapların çoğunu 19. yüzyıldan kalma sandıklardan çıkarmıştı.
+        <small>Sayılar, saat, yüzde, kısaltmalar ve sıra sayıları bu metinde bilerek var.</small></blockquote>
+      <div class="izgara" id="sesler-liste">
+        <div class="ses cam" data-ses="ornek/ses-dfki.mp3"><div class="ad"><b>dfki</b><span class="kucuk">varsayılan · CC BY-NC-SA 4.0</span><div class="ilerleme"><i></i></div></div>
+          <button class="cal" type="button" aria-pressed="false" aria-label="dfki sesini dinle"></button></div>
+        <div class="ses cam" data-ses="ornek/ses-fahrettin.mp3"><div class="ad"><b>fahrettin</b><span class="kucuk">CC0</span><div class="ilerleme"><i></i></div></div>
+          <button class="cal" type="button" aria-pressed="false" aria-label="fahrettin sesini dinle"></button></div>
+        <div class="ses cam" data-ses="ornek/ses-fettah.mp3"><div class="ad"><b>fettah</b><span class="kucuk">CC0</span><div class="ilerleme"><i></i></div></div>
+          <button class="cal" type="button" aria-pressed="false" aria-label="fettah sesini dinle"></button></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="nasil">
+    <div class="kap">
+      <h2>Nasıl çalışır?</h2>
+      <p class="bolum-alt">Altı adımlı, tamamen yerel bir hat. Metin katmanı sadece Python standart kütüphanesiyle çalışır.</p>
+      <div class="akis">
+        <div class="adim cam"><b>Ayrıştır</b><span>EPUB: stdlib · PDF: pypdfium2</span></div>
+        <div class="adim cam"><b>Temizle</b><span>üst/alt bilgi, tire, dipnot</span></div>
+        <div class="adim cam"><b>Sayfala</b><span>PDF fiziksel · EPUB ~1.500 karakter</span></div>
+        <div class="adim cam"><b>Cümlele</b><span>Türkçe kısaltma ve sayıları bilir</span></div>
+        <div class="adim cam"><b>Seslendir</b><span>Piper, cümle cümle</span></div>
+        <div class="adim cam"><b>Paketle</b><span>sayfa + bölüm MP3, link, QR</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="kurulum">
+    <div class="kap">
+      <h2>Kurulum</h2>
+      <p class="bolum-alt">Python 3.10+ ve ffmpeg yeterli. Ayrıntılar ve macOS/Linux için <a href="https://github.com/gorkemsandikci/voxlibris#kurulum">README</a>.</p>
+<pre><span class="y"># Windows</span>
+git clone https://github.com/gorkemsandikci/voxlibris.git
+cd voxlibris
+py -3.12 -m venv .venv
+.venv\Scripts\python -m pip install -r requirements.txt
+.venv\Scripts\python araclar\sesleri_indir.py
+
+<span class="y"># Kitabı sese çevir (bitince telefon linki ve QR kod çıkar)</span>
+.venv\Scripts\python -m voxlibris.donustur kitabim.epub</pre>
+    </div>
+  </section>
+
+  <section>
+    <div class="kap ekranlar">
+      <figure><img src="ekran/terminal.png" alt="Dönüştürme bitince terminalde telefon linki ve QR kod" loading="lazy" width="2000" height="980">
+        <figcaption>Dönüştürme bitince telefon için link ve QR kod.</figcaption></figure>
+      <figure><img src="ekran/telefon.png" alt="Telefonda kitaplık ve bölüm listesi" loading="lazy" width="2000" height="1800">
+        <figcaption>Telefonda kitaplık ve bölümler: dinle ya da indir.</figcaption></figure>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="kap">
+    <div><b>VoxLibris</b> — <a href="https://github.com/gorkemsandikci/voxlibris">GitHub</a> · <a href="https://github.com/gorkemsandikci/voxlibris/blob/main/LICENSE">MIT lisansı</a></div>
+    <div>Sadece sana ait, DRM'siz kitaplar için. Ürettiğin sesler kişisel kullanımındır.</div>
+    <div>Örnek sesler: Ömer Seyfettin (1884–1920), <i>Hikâyeler</i> — kamu malı, metin Vikikaynak'tan. Sesler: Piper (rhasspy/piper-voices).</div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const OYNAT = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>';
+  const DURAKLAT = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+  const ses = new Audio();
+  ses.preload = "none";
+  let etkin = null;
+
+  const satirlar = document.querySelectorAll("[data-ses]");
+  satirlar.forEach(s => s.querySelector(".cal").innerHTML = OYNAT);
+
+  function durum(satir, caliyor) {
+    const d = satir.querySelector(".cal");
+    d.setAttribute("aria-pressed", caliyor ? "true" : "false");
+    d.innerHTML = caliyor ? DURAKLAT : OYNAT;
+  }
+
+  satirlar.forEach(satir => satir.querySelector(".cal").addEventListener("click", () => {
+    if (etkin === satir && !ses.paused) { ses.pause(); return; }
+    if (etkin !== satir) {
+      if (etkin) { durum(etkin, false); etkin.querySelector(".ilerleme i").style.width = "0"; }
+      etkin = satir;
+      ses.src = satir.dataset.ses;
+    }
+    ses.play().catch(() => durum(satir, false));
+  }));
+
+  ses.addEventListener("play", () => etkin && durum(etkin, true));
+  ses.addEventListener("pause", () => etkin && durum(etkin, false));
+  ses.addEventListener("ended", () => etkin && durum(etkin, false));
+  ses.addEventListener("timeupdate", () => {
+    if (etkin && ses.duration) etkin.querySelector(".ilerleme i").style.width = (ses.currentTime / ses.duration * 100) + "%";
+  });
+})();
+</script>
+</body>
+</html>
