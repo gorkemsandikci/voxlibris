@@ -31,9 +31,44 @@ body{margin:0;font:17px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;color:
     radial-gradient(60vw 50vh at 110% 90%,#F6EEE2 0%,transparent 60%),
     var(--zemin)}
 a{color:var(--vurgu-yazi)}
-.cam{background:var(--cam);backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);
-  border:1px solid var(--cam-kenar);border-bottom-color:var(--cam-cizgi);box-shadow:var(--golge),inset 0 1px 0 rgba(255,255,255,.9);border-radius:22px}
-@media (prefers-reduced-transparency:reduce){.cam,.ust{background:var(--zemin-sicak);backdrop-filter:none}}
+.cam{position:relative;isolation:isolate;overflow:hidden;border-radius:22px;
+  background:linear-gradient(160deg,rgba(255,255,255,.66),rgba(255,255,255,.38));
+  backdrop-filter:blur(22px) saturate(170%) brightness(1.04);-webkit-backdrop-filter:blur(22px) saturate(170%) brightness(1.04);
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:0 12px 40px rgba(122,94,60,.11),0 1px 2px rgba(122,94,60,.06),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(205,181,150,.22)}
+.cam>*{position:relative;z-index:2}
+/* Kenar ışığı: üstte parlak, altta sıcak — gerçek camın ışığı kırdığı kenar */
+.cam::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:1;
+  background:linear-gradient(150deg,rgba(255,255,255,1),rgba(255,255,255,.15) 35%,rgba(205,181,150,.45) 75%,rgba(255,255,255,.8));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+/* Yansıma: kaydırdıkça kartın üzerinden geçen ışık şeridi (--isik, JS) + imleç parıltısı (--mx/--my) */
+.cam::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;
+  background:
+    radial-gradient(260px circle at var(--mx,50%) var(--my,-60%),rgba(255,255,255,.7),rgba(255,255,255,0) 65%),
+    linear-gradient(112deg,rgba(255,255,255,0) calc(var(--isik,.5)*160% - 60%),rgba(255,255,255,.85) calc(var(--isik,.5)*160% - 46%),
+      rgba(176,138,95,.10) calc(var(--isik,.5)*160% - 41%),rgba(255,255,255,0) calc(var(--isik,.5)*160% - 30%));
+  opacity:.9;transition:opacity .3s}
+/* Arka plan: camın bulanıklaştıracağı yavaş süzülen ışık lekeleri (sayfa yine çoğunlukla beyaz) */
+.zemin{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.zemin i{position:absolute;border-radius:50%;filter:blur(50px);will-change:transform;
+  transform:translate3d(0,calc(var(--kay,0) * var(--h) * -1px),0)}
+.zemin i:nth-child(1){width:44vmax;height:44vmax;right:-12vmax;top:-14vmax;--h:.10;opacity:.85;
+  background:radial-gradient(circle at 35% 35%,#E9D3B3,#F1E3CF 50%,rgba(241,227,207,0) 70%);animation:suz1 28s ease-in-out infinite alternate}
+.zemin i:nth-child(2){width:38vmax;height:38vmax;left:-14vmax;top:38vh;--h:.22;opacity:.7;
+  background:radial-gradient(circle at 60% 40%,#F0D9C2,#F6E9DA 55%,rgba(246,233,218,0) 72%);animation:suz2 34s ease-in-out infinite alternate}
+.zemin i:nth-child(3){width:30vmax;height:30vmax;right:8vmax;top:110vh;--h:.35;opacity:.65;
+  background:radial-gradient(circle at 50% 50%,#E3CBAA,#EFE1CC 50%,rgba(239,225,204,0) 72%);animation:suz3 30s ease-in-out infinite alternate}
+.zemin i:nth-child(4){width:26vmax;height:26vmax;left:22vmax;top:190vh;--h:.45;opacity:.55;
+  background:radial-gradient(circle at 50% 50%,#EAD7BD,rgba(234,215,189,0) 70%);animation:suz1 36s ease-in-out infinite alternate-reverse}
+@keyframes suz1{to{translate:-7vmax 5vmax;scale:1.12}}
+@keyframes suz2{to{translate:8vmax -4vmax;scale:.92}}
+@keyframes suz3{to{translate:-5vmax -7vmax;scale:1.08}}
+/* Belirme: kart ekrana girerken (sadece JS ve hareket açıksa gizlenir) */
+.hareket .cam.bekliyor{opacity:0;transform:translateY(18px)}
+.hareket .cam{transition:opacity .7s ease-out,transform .7s cubic-bezier(.2,.7,.2,1)}
+@media (prefers-reduced-motion:reduce){.zemin i{animation:none;transform:none}.cam::after{--isik:.5}}
+@media (prefers-reduced-transparency:reduce){.cam,.ust,.telefon,.ekran{background:var(--zemin-sicak);backdrop-filter:none;-webkit-backdrop-filter:none}.cam::after,.zemin{display:none}}
 .kap{max-width:1080px;margin:0 auto;padding:0 20px}
 
 /* üst çubuk */
@@ -65,10 +100,11 @@ h1 em{font-style:italic;color:var(--vurgu-yazi)}
 .dugme svg{width:20px;height:20px}
 
 /* telefon demo */
-.telefon{justify-self:center;width:min(360px,100%);border-radius:44px;padding:12px;background:#fff;
-  box-shadow:var(--golge-yuzen),0 0 0 1px var(--bej-orta)}
+.telefon{justify-self:center;width:min(360px,100%);border-radius:44px;padding:12px;background:rgba(255,255,255,.45);
+  backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
+  box-shadow:var(--golge-yuzen),0 0 0 1px rgba(226,211,188,.8),inset 0 1px 0 rgba(255,255,255,.95)}
 .ekran{border-radius:34px;overflow:hidden;background:
-  radial-gradient(80% 40% at 90% 0%,#F6EEE2 0%,transparent 70%),var(--zemin)}
+  radial-gradient(80% 40% at 90% 0%,rgba(246,238,226,.8) 0%,transparent 70%),rgba(255,255,255,.55)}
 .ekran-ust{padding:18px 20px 12px;border-bottom:1px solid var(--cam-cizgi);display:flex;gap:10px;align-items:baseline}
 .ekran-ust b{font-size:17px}.ekran-ust span{color:var(--vurgu-yazi);font-size:14px}
 .kitap{display:flex;gap:14px;align-items:center;margin:14px;padding:14px}
@@ -114,7 +150,7 @@ h2{font:600 clamp(28px,4vw,38px)/1.15 var(--serif);letter-spacing:-.01em;margin:
 .akis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;counter-reset:adim}
 @media (max-width:860px){.akis{grid-template-columns:repeat(2,1fr)}}
 .adim{padding:18px;position:relative}
-.adim::before{counter-increment:adim;content:counter(adim);display:grid;place-items:center;width:28px;height:28px;border-radius:50%;
+.adim b::before{counter-increment:adim;content:counter(adim);display:grid;place-items:center;width:28px;height:28px;border-radius:50%;
   background:var(--vurgu);color:#fff;font-weight:700;font-size:14px;margin-bottom:10px}
 .adim b{display:block;font-size:15.5px}.adim span{color:var(--yazi-2);font-size:14px}
 
@@ -132,6 +168,7 @@ footer .kap{display:grid;gap:8px}
 </style>
 </head>
 <body>
+<div class="zemin" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 
 <header class="ust">
   <div class="kap">
@@ -223,9 +260,9 @@ footer .kap{display:grid;gap:8px}
     <div class="kap">
       <h2>Sesler</h2>
       <p class="bolum-alt">Aynı paragraf, üç yerel Türkçe sesle. Üstteki üç hikâye örneği de bu seslerle okundu; hepsi işlemcide, saniyeler içinde üretildi.</p>
-      <blockquote class="metin-ornek cam">Bir sonbahar sabahı, Ahmet Bey 1923 yılında kurulan eski konağın kapısını açtı. Dr. Selim, saat 08:30'da
+      <blockquote class="metin-ornek cam"><span>Bir sonbahar sabahı, Ahmet Bey 1923 yılında kurulan eski konağın kapısını açtı. Dr. Selim, saat 08:30'da
         gelmişti; elinde %45 indirimli aldığı kitaplar vardı. — Hoş geldiniz, dedi Ahmet Bey. Konağın üçüncü katındaki kütüphanede
-        3.500 cilt kitap duruyordu. Prof. Ayşe Hanım bu kitapların çoğunu 19. yüzyıldan kalma sandıklardan çıkarmıştı.
+        3.500 cilt kitap duruyordu. Prof. Ayşe Hanım bu kitapların çoğunu 19. yüzyıldan kalma sandıklardan çıkarmıştı.</span>
         <small>Sayılar, saat, yüzde, kısaltmalar ve sıra sayıları bu metinde bilerek var.</small></blockquote>
       <div class="izgara" id="sesler-liste">
         <div class="ses cam" data-ses="ornek/ses-dfki.mp3"><div class="ad"><b>dfki</b><span class="kucuk">varsayılan · CC BY-NC-SA 4.0</span><div class="ilerleme"><i></i></div></div>
@@ -321,6 +358,49 @@ py -3.12 -m venv .venv
   ses.addEventListener("timeupdate", () => {
     if (etkin && ses.duration) etkin.querySelector(".ilerleme i").style.width = (ses.currentTime / ses.duration * 100) + "%";
   });
+})();
+
+(() => {
+  const hareketYok = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const kok = document.documentElement;
+  const camlar = [...document.querySelectorAll(".cam")];
+  const gorunen = new Set();
+  if (!hareketYok) {
+    kok.classList.add("hareket");
+    camlar.forEach(c => { if (c.getBoundingClientRect().top > innerHeight) c.classList.add("bekliyor"); });
+  }
+  const gozcu = new IntersectionObserver(girdiler => girdiler.forEach(g => {
+    if (g.isIntersecting) { gorunen.add(g.target); g.target.classList.remove("bekliyor"); }
+    else gorunen.delete(g.target);
+  }), { rootMargin: "0px 0px -8% 0px" });
+  camlar.forEach(c => gozcu.observe(c));
+
+  let bekleyen = false;
+  function guncelle() {
+    bekleyen = false;
+    kok.style.setProperty("--kay", scrollY.toFixed(0));
+    const h = innerHeight;
+    for (const c of gorunen) {           // kart ekranda aşağıdan yukarı çıkarken ışık soldan sağa geçer
+      const r = c.getBoundingClientRect();
+      const ilerleme = 1 - (r.top + r.height / 2) / (h + r.height / 2);
+      c.style.setProperty("--isik", Math.min(1.15, Math.max(-.15, ilerleme)).toFixed(3));
+    }
+  }
+  if (!hareketYok) {
+    addEventListener("scroll", () => { if (!bekleyen) { bekleyen = true; requestAnimationFrame(guncelle); } }, { passive: true });
+    addEventListener("resize", guncelle);
+    requestAnimationFrame(guncelle);
+  }
+  if (!hareketYok && matchMedia("(hover: hover)").matches) {
+    camlar.forEach(c => {
+      c.addEventListener("pointermove", e => {
+        const r = c.getBoundingClientRect();
+        c.style.setProperty("--mx", (e.clientX - r.left) + "px");
+        c.style.setProperty("--my", (e.clientY - r.top) + "px");
+      });
+      c.addEventListener("pointerleave", () => { c.style.removeProperty("--mx"); c.style.removeProperty("--my"); });
+    });
+  }
 })();
 </script>
 <script data-goatcounter="https://voxlibris.goatcounter.com/count"
