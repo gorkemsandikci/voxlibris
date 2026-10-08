@@ -1,4 +1,6 @@
-# Dinle
+# VoxLibris
+
+*Vox libris — kitapların sesi.*
 
 **Kendi EPUB ve PDF kitaplarını, tamamen kendi bilgisayarında ve ücretsiz olarak sesli kitaba çevir.**
 Abonelik, bulut servisi ya da API anahtarı gerekmez. Kitabın metni bilgisayarından hiç çıkmaz.
@@ -35,8 +37,8 @@ Gerekenler: Python 3.10+, [ffmpeg](https://ffmpeg.org) (MP3 için; yoksa WAV yaz
 **Windows**
 
 ```powershell
-git clone https://github.com/gorkemsandikci/dinle.git
-cd dinle
+git clone https://github.com/gorkemsandikci/voxlibris.git
+cd voxlibris
 py -3.12 -m venv .venv
 .venv\Scripts\python -m pip install -r requirements.txt
 .venv\Scripts\python araclar\sesleri_indir.py          # 3 Türkçe ses → modeller\piper\
@@ -46,7 +48,7 @@ winget install Gyan.FFmpeg                             # MP3 için
 **macOS / Linux** (Windows'ta denendi; macOS/Linux'ta henüz denenmedi)
 
 ```bash
-git clone https://github.com/gorkemsandikci/dinle.git && cd dinle
+git clone https://github.com/gorkemsandikci/voxlibris.git && cd voxlibris
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python araclar/sesleri_indir.py
 # ffmpeg: brew install ffmpeg  |  sudo apt install ffmpeg
@@ -55,10 +57,10 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 ## Kullanım
 
 ```powershell
-.venv\Scripts\python -m dinle.donustur kitabim.epub                     # tüm kitap
-.venv\Scripts\python -m dinle.donustur kitabim.pdf --ses fettah         # başka ses
-.venv\Scripts\python -m dinle.donustur kitabim.pdf --sayfalar 1-20      # sadece bazı sayfalar
-.venv\Scripts\python -m dinle.donustur kitabim.pdf --sadece-metin       # ses üretmeden, sayfalara bölünmüş metni kontrol et
+.venv\Scripts\python -m voxlibris.donustur kitabim.epub                     # tüm kitap
+.venv\Scripts\python -m voxlibris.donustur kitabim.pdf --ses fettah         # başka ses
+.venv\Scripts\python -m voxlibris.donustur kitabim.pdf --sayfalar 1-20      # sadece bazı sayfalar
+.venv\Scripts\python -m voxlibris.donustur kitabim.pdf --sadece-metin       # ses üretmeden, sayfalara bölünmüş metni kontrol et
 ```
 
 Çıktı `veri/kitaplar/<kimlik>/` altında:
@@ -91,16 +93,16 @@ Sunucu sadece `127.0.0.1:8790`'da dinler; dışarıya kendiliğinden açılmaz.
 powershell -NoProfile -ExecutionPolicy Bypass -File kurulum\sunucu_kur.ps1
 ```
 
-Bu betik iki şey yapar. Oturum açılınca başlayan bir "Dinle-Sunucu" görevi kurar ve `tailscale serve` ile
-`https://<bilgisayar>.<tailnet>.ts.net/dinle/` yolunu sadece kendi Tailscale ağına açar. Yönetici izni gerekmez,
+Bu betik iki şey yapar. Oturum açılınca başlayan bir "VoxLibris-Sunucu" görevi kurar ve `tailscale serve` ile
+`https://<bilgisayar>.<tailnet>.ts.net/voxlibris/` yolunu sadece kendi Tailscale ağına açar. Yönetici izni gerekmez,
 internete port açılmaz. Tailscale ağındaki başka hesaplar 403 alır. Bundan sonra her dönüştürmenin sonunda kitabın
 linki ve QR kodu yazılır.
 
-Geri almak: `Unregister-ScheduledTask Dinle-Sunucu -Confirm:$false; tailscale serve --set-path /dinle off`
+Geri almak: `Unregister-ScheduledTask VoxLibris-Sunucu -Confirm:$false; tailscale serve --set-path /voxlibris off`
 
-macOS/Linux'ta: `.venv/bin/python -m dinle.sunucu &` ve `tailscale serve --bg --set-path /dinle http://127.0.0.1:8790`.
+macOS/Linux'ta: `.venv/bin/python -m voxlibris.sunucu &` ve `tailscale serve --bg --set-path /voxlibris http://127.0.0.1:8790`.
 
-**Sadece ev ağında (Tailscale olmadan):** `python -m dinle.sunucu --adres 0.0.0.0` → telefondan
+**Sadece ev ağında (Tailscale olmadan):** `python -m voxlibris.sunucu --adres 0.0.0.0` → telefondan
 `http://<bilgisayarın-yerel-ip'si>:8790/`. ⚠️ Bu modda parola yoktur; aynı Wi-Fi'daki herkes kitaplığı görebilir.
 Linkin dönüştürmeden sonra yazılması için `veri/sunucu.json` dosyasına
 `{"genel_adres": "http://192.168.1.10:8790/"}` yaz (kendi IP adresinle).
@@ -115,14 +117,14 @@ EPUB / PDF ─► ayrıştır ─► temizle ─► sayfalara böl ─► cümle
 
 | Modül | Görevi |
 |---|---|
-| `dinle/metin/epub.py` | EPUB (sadece stdlib): OPF, okuma sırası, içindekiler, DRM ve zip bombası kontrolü |
-| `dinle/metin/pdf.py` | PDF (pypdfium2): sayfa metni, yer imleri, paragrafları sayfalar arasında birleştirme |
-| `dinle/metin/temizle.py` | Üst/alt bilgi (konuma bağlı), tireleme, görünmez karakterler, dipnot rakamları |
-| `dinle/metin/bol.py` | Türkçe cümle bölme ve sayfalama |
-| `dinle/metin/okunus.py` | Sayıyı yazıya çevirme, sıra sayıları, kısaltmalar, Roma rakamları |
-| `dinle/ses/` | Ses motoru (Piper), sayfa sesi + cümle zamanları, MP3 yazma |
-| `dinle/donustur.py` | Komut satırı; devam edebilen üretim, bölüm MP3'leri |
-| `dinle/sunucu.py` | İndirme/dinleme sayfası (stdlib HTTP, Range destekli, ZIP) |
+| `voxlibris/metin/epub.py` | EPUB (sadece stdlib): OPF, okuma sırası, içindekiler, DRM ve zip bombası kontrolü |
+| `voxlibris/metin/pdf.py` | PDF (pypdfium2): sayfa metni, yer imleri, paragrafları sayfalar arasında birleştirme |
+| `voxlibris/metin/temizle.py` | Üst/alt bilgi (konuma bağlı), tireleme, görünmez karakterler, dipnot rakamları |
+| `voxlibris/metin/bol.py` | Türkçe cümle bölme ve sayfalama |
+| `voxlibris/metin/okunus.py` | Sayıyı yazıya çevirme, sıra sayıları, kısaltmalar, Roma rakamları |
+| `voxlibris/ses/` | Ses motoru (Piper), sayfa sesi + cümle zamanları, MP3 yazma |
+| `voxlibris/donustur.py` | Komut satırı; devam edebilen üretim, bölüm MP3'leri |
+| `voxlibris/sunucu.py` | İndirme/dinleme sayfası (stdlib HTTP, Range destekli, ZIP) |
 
 Metin katmanı sadece Python standart kütüphanesiyle çalışır.
 
@@ -152,7 +154,7 @@ Hata bildirimi ve PR'lar açık. Yanlış okunan bir kelime ya da kısaltma bulu
 
 ## Yasal not
 
-Dinle sadece **sana ait, DRM'siz** kitaplar içindir. DRM kırmaz ve kitap indirmez. Ürettiğin sesler kişisel
+VoxLibris sadece **sana ait, DRM'siz** kitaplar içindir. DRM kırmaz ve kitap indirmez. Ürettiğin sesler kişisel
 kullanımındır; telif hakkı süren eserlerin seslerini paylaşma. `dfki` sesi ticari olmayan kullanım lisanslıdır.
 
 ## Lisans
@@ -164,7 +166,7 @@ Apache-2.0/BSD; sesler için yukarıdaki tabloya bak.
 
 ### English
 
-**Dinle** ("listen" in Turkish) turns your own DRM-free EPUB and PDF books into audiobooks, fully offline and free,
+**VoxLibris** (Latin for "voice of books") turns your own DRM-free EPUB and PDF books into audiobooks, fully offline and free,
 using local [Piper](https://github.com/OHF-Voice/piper1-gpl) Turkish voices on the CPU. A 500-page book becomes about
 12–17 hours of chapter MP3s in roughly 15 minutes. A small built-in web page lets you stream or download the chapters
 (or one ZIP) from your phone, privately over Tailscale. Text cleanup (running headers, page numbers, hyphenation,

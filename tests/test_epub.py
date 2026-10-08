@@ -4,8 +4,8 @@ import unittest
 import zipfile
 from pathlib import Path
 
-from dinle.metin import epub
-from dinle.metin.model import KitapHatasi
+from voxlibris.metin import epub
+from voxlibris.metin.model import KitapHatasi
 
 CONTAINER = ('<?xml version="1.0"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">'
              '<rootfiles><rootfile full-path="OPS/paket.opf" media-type="application/oebps-package+xml"/></rootfiles>'

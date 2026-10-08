@@ -1,25 +1,25 @@
-﻿# Dinle sunucusu (Windows): oturum açılışında başlayan görev + (varsa) sadece Tailscale ağına HTTPS yolu.
+﻿# VoxLibris sunucusu (Windows): oturum açılışında başlayan görev + (varsa) sadece Tailscale ağına HTTPS yolu.
 #   powershell -NoProfile -ExecutionPolicy Bypass -File kurulum\sunucu_kur.ps1
-# Geri almak:  Unregister-ScheduledTask Dinle-Sunucu -Confirm:$false ; tailscale serve --set-path /dinle off
+# Geri almak:  Unregister-ScheduledTask VoxLibris-Sunucu -Confirm:$false ; tailscale serve --set-path /voxlibris off
 # Yönetici gerekmez; internete port açılmaz (sunucu 127.0.0.1'de, dışarıya tek yol tailnet).
 
 $ErrorActionPreference = "Stop"
 $Kok = Split-Path -Parent $PSScriptRoot
 $Pythonw = Join-Path $Kok ".venv\Scripts\pythonw.exe"
 $Port = 8790
-$Yol = "/dinle"
+$Yol = "/voxlibris"
 if (-not (Test-Path $Pythonw)) { throw "Önce sanal ortam: py -3.12 -m venv .venv ve pip install -r requirements.txt" }
 
 # 1) Zamanlanmış görev (kullanıcı oturumu, gizli pencere, çökerse yeniden başlat)
-$Eylem = New-ScheduledTaskAction -Execute $Pythonw -Argument "-m dinle.sunucu" -WorkingDirectory $Kok
+$Eylem = New-ScheduledTaskAction -Execute $Pythonw -Argument "-m voxlibris.sunucu" -WorkingDirectory $Kok
 $Tetik = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
 $Ayar = New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::Zero) -RestartCount 3 `
     -RestartInterval (New-TimeSpan -Minutes 1) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -MultipleInstances IgnoreNew
-Register-ScheduledTask -TaskName "Dinle-Sunucu" -Action $Eylem -Trigger $Tetik -Settings $Ayar `
-    -Description "Dinle sesli kitap sunucusu (127.0.0.1:$Port)" -Force | Out-Null
-Start-ScheduledTask -TaskName "Dinle-Sunucu"
+Register-ScheduledTask -TaskName "VoxLibris-Sunucu" -Action $Eylem -Trigger $Tetik -Settings $Ayar `
+    -Description "VoxLibris sesli kitap sunucusu (127.0.0.1:$Port)" -Force | Out-Null
+Start-ScheduledTask -TaskName "VoxLibris-Sunucu"
 
-# 2) Tailscale varsa: https://<makine>.<tailnet>.ts.net/dinle -> 127.0.0.1:8790 (diğer serve yollarına dokunmaz)
+# 2) Tailscale varsa: https://<makine>.<tailnet>.ts.net/voxlibris -> 127.0.0.1:8790 (diğer serve yollarına dokunmaz)
 $Veri = Join-Path $Kok "veri"
 New-Item -ItemType Directory -Force $Veri | Out-Null
 $Adres = $null
