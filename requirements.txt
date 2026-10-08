@@ -1,0 +1,4 @@
+# Metin katmanı (dinle/metin/) sadece stdlib; bunlar ses ve PDF için.
+piper-tts==1.8.0
+pypdfium2==5.14.0
+qrcode==8.2   # isteğe bağlı: indirme linki için QR

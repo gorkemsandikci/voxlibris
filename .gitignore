@@ -1,0 +1,18 @@
+# Ortamlar ve modeller (indirilir, repoya girmez)
+.venv/
+.venv-gpu/
+modeller/
+__pycache__/
+*.pyc
+
+# Kullanıcı kitapları ve üretilen sesler (kişisel; ev dışına çıkmaz)
+veri/
+
+# Ölçüm çıktıları (ses örnekleri, kayıtlar)
+olcum/
+
+# araclar/ornek_kitap.py'nin ürettiği test kitapları (kaynak metin ornekler/kaynak/ altında)
+ornekler/*.epub
+ornekler/*.pdf
+ornekler/*.html
+*.tmp
