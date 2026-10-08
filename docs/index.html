@@ -83,6 +83,7 @@ h1 em{font-style:italic;color:var(--vurgu-yazi)}
   color:var(--vurgu-yazi);display:grid;place-items:center;cursor:pointer;transition:background .2s}
 .cal svg{width:16px;height:16px}
 .cal[aria-pressed="true"]{background:var(--vurgu);border-color:var(--vurgu);color:#fff}
+.ses-cip{display:inline-block;padding:0 8px;margin-right:4px;border-radius:999px;background:var(--vurgu-acik);color:var(--vurgu-yazi);font-size:12px;font-weight:600;line-height:20px}
 .ilerleme{height:3px;border-radius:3px;background:var(--bej);margin-top:6px;overflow:hidden}
 .ilerleme i{display:block;height:100%;width:0;background:var(--vurgu)}
 
@@ -175,12 +176,12 @@ footer .kap{display:grid;gap:8px}
           <div><b>Hikâyeler</b><div class="kucuk">Ömer Seyfettin · 71 bölüm · 17 sa 5 dk</div></div>
         </div>
         <div class="bolumler cam" id="oynatici">
-          <div class="bolum" data-ses="ornek/aleko.mp3"><div class="ad"><div>Aleko</div><div class="kucuk">40 dk · ilk 2 dk</div><div class="ilerleme"><i></i></div></div>
-            <button class="cal" type="button" aria-pressed="false" aria-label="Aleko — dinle"></button></div>
-          <div class="bolum" data-ses="ornek/antiseptik.mp3"><div class="ad"><div>Antiseptik</div><div class="kucuk">6 dk · ilk 2 dk</div><div class="ilerleme"><i></i></div></div>
-            <button class="cal" type="button" aria-pressed="false" aria-label="Antiseptik — dinle"></button></div>
-          <div class="bolum" data-ses="ornek/ask-dalgasi.mp3"><div class="ad"><div>Aşk Dalgası</div><div class="kucuk">23 dk · ilk 2 dk</div><div class="ilerleme"><i></i></div></div>
-            <button class="cal" type="button" aria-pressed="false" aria-label="Aşk Dalgası — dinle"></button></div>
+          <div class="bolum" data-ses="ornek/aleko.mp3"><div class="ad"><div>Aleko</div><div class="kucuk"><span class="ses-cip">dfki</span> 40 dk · ilk 2 dk</div><div class="ilerleme"><i></i></div></div>
+            <button class="cal" type="button" aria-pressed="false" aria-label="Aleko — dfki sesiyle dinle"></button></div>
+          <div class="bolum" data-ses="ornek/antiseptik.mp3"><div class="ad"><div>Antiseptik</div><div class="kucuk"><span class="ses-cip">fahrettin</span> 6 dk · ilk 2 dk</div><div class="ilerleme"><i></i></div></div>
+            <button class="cal" type="button" aria-pressed="false" aria-label="Antiseptik — fahrettin sesiyle dinle"></button></div>
+          <div class="bolum" data-ses="ornek/ask-dalgasi.mp3"><div class="ad"><div>Aşk Dalgası</div><div class="kucuk"><span class="ses-cip">fettah</span> 23 dk · ilk 2 dk</div><div class="ilerleme"><i></i></div></div>
+            <button class="cal" type="button" aria-pressed="false" aria-label="Aşk Dalgası — fettah sesiyle dinle"></button></div>
         </div>
       </div>
     </div>
@@ -221,7 +222,7 @@ footer .kap{display:grid;gap:8px}
   <section id="sesler">
     <div class="kap">
       <h2>Sesler</h2>
-      <p class="bolum-alt">Aynı paragraf, üç yerel Türkçe sesle. Hepsi işlemcide, saniyeler içinde üretildi.</p>
+      <p class="bolum-alt">Aynı paragraf, üç yerel Türkçe sesle. Üstteki üç hikâye örneği de bu seslerle okundu; hepsi işlemcide, saniyeler içinde üretildi.</p>
       <blockquote class="metin-ornek cam">Bir sonbahar sabahı, Ahmet Bey 1923 yılında kurulan eski konağın kapısını açtı. Dr. Selim, saat 08:30'da
         gelmişti; elinde %45 indirimli aldığı kitaplar vardı. — Hoş geldiniz, dedi Ahmet Bey. Konağın üçüncü katındaki kütüphanede
         3.500 cilt kitap duruyordu. Prof. Ayşe Hanım bu kitapların çoğunu 19. yüzyıldan kalma sandıklardan çıkarmıştı.
